@@ -1,6 +1,16 @@
 import React from "react";
-const User = ({ user, onDelete }) => {
-  const { _id, name, qualities, profession, completedMeetings, rate } = user;
+import Qualitie from "./qualitie";
+import Bookmark from "./bookmark";
+const User = ({ user, onDelete, onBookmark }) => {
+  const {
+    _id,
+    name,
+    qualities,
+    profession,
+    completedMeetings,
+    rate,
+    bookmark,
+  } = user;
   return (
     <>
       {/* получаем юзеров и заполняем таблицу */}
@@ -8,16 +18,14 @@ const User = ({ user, onDelete }) => {
       <tr>
         <td>{name}</td>
         <td>
-          {qualities.map((quality) => (
-            <span key={quality._id} className={`badge bg-${quality.color} m-2`}>
-              {/* в зависимости от цвета рендерим качества */}
-              {quality.name}
-            </span>
-          ))}
+          <Qualitie qualities={qualities} />
         </td>
         <td>{profession.name}</td>
         <td>{completedMeetings}</td>
         <td>{rate}</td>
+        <td>
+          <Bookmark status={bookmark} onBookmark={onBookmark} id={_id} />
+        </td>
         <td>
           {
             <button

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import User from "./user";
+import SearchStatus from "./searchStatus";
 import api from "../api";
 
 const Users = () => {
@@ -10,38 +11,18 @@ const Users = () => {
     const newUsers = users.filter((user) => userId !== user._id);
     setUsers(newUsers);
   };
-  const renderPrase = (number) => {
-    // Количество человек, которые с тобой тусанут
-    if (number === 0) {
-      return (
-        <span className="badge bg-danger">
-          <h3>Никто с тобой не тусанет</h3>
-        </span>
-      );
-    } else if (
-      number === 1 ||
-      (number >= 5 && number <= 20) ||
-      !(number % 10 >= 2 && number % 10 <= 4)
-    ) {
-      return (
-        <span className="badge bg-primary">
-          <h3>{`${number} человек тусанет с тобой сегодня`}</h3>
-        </span>
-      );
-    } else if (
-      (number >= 2 && number <= 4) ||
-      (number % 10 >= 2 && number % 10 <= 4)
-    ) {
-      return (
-        <span className="badge bg-primary">
-          <h3>{`${number} человека тусанут с тобой сегодня`}</h3>
-        </span>
-      );
-    }
+  const handleFavorite = (id) => {
+    const newUsers = users.map((user) => {
+      if (user._id === id) {
+        return { ...user, bookmark: !user.bookmark };
+      }
+      return user;
+    });
+    setUsers(newUsers);
   };
   return (
     <>
-      {renderPrase(numberOfUsers)}
+      <SearchStatus number={numberOfUsers} />
       {numberOfUsers > 0 ? (
         <table className="table">
           <thead>
@@ -51,12 +32,18 @@ const Users = () => {
               <th scope="col">Профессия</th>
               <th scope="col">Встретился, раз</th>
               <th scope="col">Оценка</th>
+              <th scope="col">Избранное</th>
               <th scope="col"></th>
             </tr>
           </thead>
           <tbody>
             {users.map((user) => (
-              <User key={user._id} user={user} onDelete={handleDelete} />
+              <User
+                key={user._id}
+                user={user}
+                onDelete={handleDelete}
+                onBookmark={handleFavorite}
+              />
             ))}
           </tbody>
         </table>
