@@ -8,4 +8,9 @@ const Bookmark = ({ status, onBookmark, id }) => {
     ></i>
   );
 };
+Bookmark.propTypes = {
+  status: PropTypes.bool.isRequired,
+  id: PropTypes.string.isRequired,
+  onBookmark: PropTypes.func.isRequired,
+};
 export default Bookmark;
