@@ -7,14 +7,19 @@ import { paginate } from "../utils/paginate";
 import api from "../api";
 
 const Users = () => {
-  const [users, setUsers] = useState(api.users.fetchAll());
+  const [users, setUsers] = useState();
   const pageSize = 4; // количество пользователей на странице
   const [currentPage, setCurrentPage] = useState(1); // по умолчанию всегда выбираем первую страницу
   const [professions, setProfessions] = useState();
   const [selectedProf, setSelectedProf] = useState();
   useEffect(() => {
     //useEffect вызывается каждый раз, когда монтируем что-то в DOM. Можем один раз при монтировании компонента, или каждый раз при изменении компонента, или можем его вызывать, когда изменяется какое либо состояние
-    console.log("rendre");
+    api.users.fetchAll().then((data) => {
+      setUsers(data);
+    });
+  }, []);
+  useEffect(() => {
+    //useEffect вызывается каждый раз, когда монтируем что-то в DOM. Можем один раз при монтировании компонента, или каждый раз при изменении компонента, или можем его вызывать, когда изменяется какое либо состояние
     api.professions.fetchAll().then((data) => {
       setProfessions(data);
     });
