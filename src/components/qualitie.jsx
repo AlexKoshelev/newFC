@@ -13,7 +13,7 @@ const Qualitie = ({ qualities }) => {
   );
 };
 
-Qualitie.propTipes = {
+Qualitie.propTypes = {
   qualities: PropTypes.array.isRequired,
 };
 export default Qualitie;

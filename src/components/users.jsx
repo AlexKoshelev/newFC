@@ -7,11 +7,12 @@ import { paginate } from "../utils/paginate";
 import api from "../api";
 
 const Users = () => {
-  const [users, setUsers] = useState();
+  const [users, setUsers] = useState([]);
   const pageSize = 4; // количество пользователей на странице
   const [currentPage, setCurrentPage] = useState(1); // по умолчанию всегда выбираем первую страницу
   const [professions, setProfessions] = useState();
   const [selectedProf, setSelectedProf] = useState();
+  console.log(api);
   useEffect(() => {
     //useEffect вызывается каждый раз, когда монтируем что-то в DOM. Можем один раз при монтировании компонента, или каждый раз при изменении компонента, или можем его вызывать, когда изменяется какое либо состояние
     api.users.fetchAll().then((data) => {
@@ -51,9 +52,12 @@ const Users = () => {
     setSelectedProf(item);
   };
   const filtredUsers = selectedProf //если selectedProf есть, то фильтруем исходный массив по совпадению с selectedProf, если нет, то возращаем всех users
-    ? users.filter((user) => user.profession === selectedProf)
+    ? users.filter(
+        (user) =>
+          JSON.stringify(user.profession) === JSON.stringify(selectedProf)
+      )
     : users;
-  const userCrop = paginate(filtredUsers, currentPage, pageSize); // получаем новый массив, обрезанный под размер страницы
+  const userCrop = users && paginate(filtredUsers, currentPage, pageSize); // получаем новый массив, обрезанный под размер страницы
   const clearFilter = () => {
     //сбрасываем исходные значения
     setSelectedProf();
