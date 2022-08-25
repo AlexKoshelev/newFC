@@ -12,6 +12,15 @@ const TableHeader = ({ onSort, selectedSort, columns }) => {
       onSort({ iter: item, order: "asc" });
     }
   };
+  const arrowSort = (item) => {
+    if (selectedSort.iter === item) {
+      if (selectedSort.order === "asc") {
+        return <i className="bi bi-caret-up-fill"></i>;
+      } else if (selectedSort.order === "desc") {
+        return <i className="bi bi-caret-down-fill"></i>;
+      }
+    }
+  };
   return (
     <thead>
       <tr>
@@ -27,6 +36,7 @@ const TableHeader = ({ onSort, selectedSort, columns }) => {
             role={columns[column].iter ? "button" : undefined}
           >
             {columns[column].name}
+            <span>{arrowSort(columns[column].iter)}</span>
           </th>
         ))}
       </tr>

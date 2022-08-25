@@ -52,6 +52,7 @@ const Users = () => {
   };
   const handleSort = (item) => {
     setSortBy(item);
+    return <i class="bi bi-caret-up-fill"></i>;
   };
   const filtredUsers = selectedProf //если selectedProf есть, то фильтруем исходный массив по совпадению с selectedProf, если нет, то возращаем всех users
     ? users.filter(
