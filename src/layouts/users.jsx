@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import _ from "lodash";
-import UserTable from "./userTable";
-import SearchStatus from "./searchStatus";
-import Pagination from "./pagination";
-import GroupList from "./groupList";
+import UserTable from "../app/components/userTable";
+import SearchStatus from "../app/components/searchStatus";
+import Pagination from "../app/components/pagination";
+import GroupList from "../app/components/groupList";
 import { paginate } from "../utils/paginate";
 import api from "../api";
-
+import { getById } from "../api/fake.api/user.api";
 const Users = () => {
   const [users, setUsers] = useState([]); //импортируем пустой массив, чтобы не было ошибки при рендере таблицы, пока асинхронный запрос не был обработан
   const pageSize = 4; // количество пользователей на странице
@@ -14,6 +14,7 @@ const Users = () => {
   const [currentPage, setCurrentPage] = useState(1); // по умолчанию всегда выбираем первую страницу
   const [professions, setProfessions] = useState();
   const [selectedProf, setSelectedProf] = useState();
+  const [userId, setUserId] = useState();
   useEffect(() => {
     //useEffect вызывается каждый раз, когда монтируем что-то в DOM. Можем один раз при монтировании компонента, или каждый раз при изменении компонента, или можем его вызывать, когда изменяется какое либо состояние
     api.users.fetchAll().then((data) => {
@@ -23,7 +24,17 @@ const Users = () => {
       setProfessions(data);
     });
   }, []);
+  useEffect(() => {
+    api.users.getById(userId).then((data) => {
+      setUserId(data);
+    });
+  }, []);
+  /*   const handleUserId = (id) => {
+    console.log(id);
+    setUserId(id);
+  }; */
 
+  console.log(userId);
   useEffect(() => {
     setCurrentPage(1);
   }, [selectedProf]);
@@ -52,7 +63,6 @@ const Users = () => {
   };
   const handleSort = (item) => {
     setSortBy(item);
-    return <i class="bi bi-caret-up-fill"></i>;
   };
   const filtredUsers = selectedProf //если selectedProf есть, то фильтруем исходный массив по совпадению с selectedProf, если нет, то возращаем всех users
     ? users.filter(
@@ -93,6 +103,8 @@ const Users = () => {
                 onBookmark={handleFavorite}
                 onSort={handleSort}
                 selectedSort={sortBy}
+                onUserId={setUserId}
+                userId={userId}
               />
               <div className="d-flex justify-content-center">
                 <Pagination

@@ -4,7 +4,15 @@ import Bookmark from "./bookmark";
 import Qualitie from "./qualitie";
 import Table from "./table";
 
-const UserTable = ({ users, onDelete, onBookmark, selectedSort, onSort }) => {
+const UserTable = ({
+  users,
+  onDelete,
+  onBookmark,
+  selectedSort,
+  onSort,
+  onUserId,
+  userId,
+}) => {
   const columns = {
     name: { iter: "name", name: "Имя" },
     qualities: {
@@ -43,6 +51,8 @@ const UserTable = ({ users, onDelete, onBookmark, selectedSort, onSort }) => {
       selectedSort={selectedSort}
       onSort={onSort}
       columns={columns}
+      onUserId={onUserId}
+      userId={userId}
     />
   );
 };

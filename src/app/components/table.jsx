@@ -2,7 +2,7 @@ import React from "react";
 import TableHeader from "./tableHeader";
 import TableBody from "./tableBody";
 import PropTypes from "prop-types";
-const Table = ({ selectedSort, onSort, columns, data }) => {
+const Table = ({ selectedSort, onSort, columns, data, onUserId, userId }) => {
   return (
     <table className="table">
       <TableHeader
@@ -10,7 +10,12 @@ const Table = ({ selectedSort, onSort, columns, data }) => {
         onSort={onSort}
         columns={columns}
       />
-      <TableBody data={data} columns={columns} />
+      <TableBody
+        data={data}
+        columns={columns}
+        onUserId={onUserId}
+        userId={userId}
+      />
     </table>
   );
 };
