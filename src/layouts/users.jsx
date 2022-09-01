@@ -6,7 +6,9 @@ import Pagination from "../app/components/pagination";
 import GroupList from "../app/components/groupList";
 import { paginate } from "../utils/paginate";
 import api from "../api";
-import { getById } from "../api/fake.api/user.api";
+import UserPage from "../app/components/userPage";
+import { useParams } from "react-router-dom";
+
 const Users = () => {
   const [users, setUsers] = useState([]); //импортируем пустой массив, чтобы не было ошибки при рендере таблицы, пока асинхронный запрос не был обработан
   const pageSize = 4; // количество пользователей на странице
@@ -14,7 +16,15 @@ const Users = () => {
   const [currentPage, setCurrentPage] = useState(1); // по умолчанию всегда выбираем первую страницу
   const [professions, setProfessions] = useState();
   const [selectedProf, setSelectedProf] = useState();
-  const [userId, setUserId] = useState();
+  const [selectedUsers, setSelectedUsers] = useState();
+  const params = useParams(); //получаем доступ к match.params
+  const { userId } = params; //получаем id по ссылке в userTable
+  useEffect(() => {
+    api.users.getById(userId).then((data) => {
+      setSelectedUsers(data);
+    });
+  }, [userId]); //получаем объект с данными по выбранному пользователю
+
   useEffect(() => {
     //useEffect вызывается каждый раз, когда монтируем что-то в DOM. Можем один раз при монтировании компонента, или каждый раз при изменении компонента, или можем его вызывать, когда изменяется какое либо состояние
     api.users.fetchAll().then((data) => {
@@ -24,17 +34,7 @@ const Users = () => {
       setProfessions(data);
     });
   }, []);
-  useEffect(() => {
-    api.users.getById(userId).then((data) => {
-      setUserId(data);
-    });
-  }, []);
-  /*   const handleUserId = (id) => {
-    console.log(id);
-    setUserId(id);
-  }; */
 
-  console.log(userId);
   useEffect(() => {
     setCurrentPage(1);
   }, [selectedProf]);
@@ -78,46 +78,48 @@ const Users = () => {
   };
   return (
     <>
-      <div className="d-flex">
-        <>
-          {professions && ( //если профессии есть, рендерим список профессий
-            <div className="d-flex flex-column flex-shrink-0 p-3">
-              <GroupList
-                items={professions}
-                onItemSelect={handleProfessionSelect}
-                selectedItem={selectedProf}
-              />
-              <button className="btn btn-secondary" onClick={clearFilter}>
-                Очистить
-              </button>
-            </div>
-          )}
-        </>
-        <div className="d-flex flex-column ">
-          <SearchStatus number={filtredUsers.length} />
-          {filtredUsers.length > 0 ? (
-            <div>
-              <UserTable
-                users={userCrop}
-                onDelete={handleDelete}
-                onBookmark={handleFavorite}
-                onSort={handleSort}
-                selectedSort={sortBy}
-                onUserId={setUserId}
-                userId={userId}
-              />
-              <div className="d-flex justify-content-center">
-                <Pagination
-                  item={filtredUsers.length}
-                  pageSize={pageSize}
-                  currentPage={currentPage}
-                  onPageChange={handlePageChange}
+      {userId ? (
+        <UserPage user={selectedUsers} /> //если получили id, то отображаем страницу пользователя
+      ) : (
+        <div className="d-flex">
+          <>
+            {professions && ( //если профессии есть, рендерим список профессий
+              <div className="d-flex flex-column flex-shrink-0 p-3">
+                <GroupList
+                  items={professions}
+                  onItemSelect={handleProfessionSelect}
+                  selectedItem={selectedProf}
                 />
+                <button className="btn btn-secondary" onClick={clearFilter}>
+                  Очистить
+                </button>
               </div>
-            </div>
-          ) : null}
+            )}
+          </>
+          <div className="d-flex flex-column ">
+            <SearchStatus number={filtredUsers.length} />
+            {filtredUsers.length > 0 ? (
+              <div>
+                <UserTable
+                  users={userCrop}
+                  onDelete={handleDelete}
+                  onBookmark={handleFavorite}
+                  onSort={handleSort}
+                  selectedSort={sortBy}
+                />
+                <div className="d-flex justify-content-center">
+                  <Pagination
+                    item={filtredUsers.length}
+                    pageSize={pageSize}
+                    currentPage={currentPage}
+                    onPageChange={handlePageChange}
+                  />
+                </div>
+              </div>
+            ) : null}
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 };

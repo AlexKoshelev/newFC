@@ -1,15 +1,35 @@
-import React, { useState, useEffect } from "react";
-import api from "../../api";
+import React from "react";
+import Qualitie from "./qualitie";
+import { useHistory } from "react-router-dom";
 
 const UserPage = ({ user }) => {
+  const history = useHistory();
+  const goToBack = () => {
+    history.push("/layouts/users");
+  };
   return (
     <>
-      {/*       <h1>{user.name}</h1>
-      <h2>{user.profession}</h2>
-      <div>{user.qualitie}</div>
-      <div>{user.complitedMeeting}</div>
-      <h2>{user.rate}</h2> */}
-      <button>all users</button>
+      {user === undefined ? (
+        <h1>Loading...</h1>
+      ) : (
+        <div>
+          <h1>{user.name}</h1>
+          <h2>{`Профессия: ${user.profession.name}`}</h2>
+          <div>
+            <Qualitie qualities={user.qualities} />
+          </div>
+          <div>{`CompletedMeetings: ${user.completedMeetings}`}</div>
+          <h2>{`Rate: ${user.rate}`}</h2>
+          <button
+            className="btn btn-primary"
+            onClick={() => {
+              goToBack();
+            }}
+          >
+            Все пользователи
+          </button>
+        </div>
+      )}
     </>
   );
 };

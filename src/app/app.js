@@ -2,9 +2,7 @@ import NavBar from "./components/navBar";
 import Users from "../layouts/users";
 import Main from "../layouts/main";
 import Login from "../layouts/login";
-import UserPage from "./components/userPage";
 import { Route, Switch } from "react-router-dom";
-
 const App = () => {
   return (
     <div>
