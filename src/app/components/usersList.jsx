@@ -6,6 +6,7 @@ import Pagination from "./pagination";
 import GroupList from "./groupList";
 import { paginate } from "../../utils/paginate";
 import api from "../../api";
+import SearchLine from "./searchLine";
 
 const UsersList = () => {
   const [users, setUsers] = useState([]); //импортируем пустой массив, чтобы не было ошибки при рендере таблицы, пока асинхронный запрос не был обработан
@@ -14,6 +15,7 @@ const UsersList = () => {
   const [currentPage, setCurrentPage] = useState(1); // по умолчанию всегда выбираем первую страницу
   const [professions, setProfessions] = useState();
   const [selectedProf, setSelectedProf] = useState();
+  const [searchUsers, setSearchUsers] = useState("");
   useEffect(() => {
     //useEffect вызывается каждый раз, когда монтируем что-то в DOM. Можем один раз при монтировании компонента, или каждый раз при изменении компонента, или можем его вызывать, когда изменяется какое либо состояние
     api.users.fetchAll().then((data) => {
@@ -24,6 +26,9 @@ const UsersList = () => {
     });
   }, []);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchUsers]);
   useEffect(() => {
     setCurrentPage(1);
   }, [selectedProf]);
@@ -53,12 +58,34 @@ const UsersList = () => {
   const handleSort = (item) => {
     setSortBy(item);
   };
-  const filtredUsers = selectedProf //если selectedProf есть, то фильтруем исходный массив по совпадению с selectedProf, если нет, то возращаем всех users
+
+  const getSerchValue = (value) => {
+    setSearchUsers(value);
+  };
+
+  const usersFromSearch = searchUsers
+    ? users.filter((user) =>
+        user.name
+          .toLowerCase()
+          .split(" ")
+          .join("")
+          .includes(searchUsers.toLowerCase().split(" ").join(""))
+      )
+    : users;
+
+  const filtredProfUsers = selectedProf //если selectedProf есть, то фильтруем исходный массив по совпадению с selectedProf, если нет, то возращаем всех users
     ? users.filter(
         (user) =>
           JSON.stringify(user.profession) === JSON.stringify(selectedProf)
       )
     : users;
+
+  const filtredUsers =
+    searchUsers && usersFromSearch.length > 0
+      ? usersFromSearch
+      : selectedProf
+      ? filtredProfUsers
+      : users;
   const sortedUsers = _.orderBy(filtredUsers, [sortBy.iter], [sortBy.order]);
   const userCrop = users && paginate(sortedUsers, currentPage, pageSize); // получаем новый массив, обрезанный под размер страницы
   const clearFilter = () => {
@@ -86,6 +113,10 @@ const UsersList = () => {
           <SearchStatus number={filtredUsers.length} />
           {filtredUsers.length > 0 ? (
             <div>
+              <SearchLine
+                getSerchValue={getSerchValue}
+                quantityOfUsers={usersFromSearch.length}
+              />
               <UserTable
                 users={userCrop}
                 onDelete={handleDelete}

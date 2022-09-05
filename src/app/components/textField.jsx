@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 const TextField = ({ label, type, name, value, onChange, error }) => {
   const [showPassword, setShowPassword] = useState(false);
   const getInputClasses = () => {
+    // если ошибка есть, отображаем класс ошибки
     return error ? "form-control is-invalid" : "form-control";
   };
   const toggleShowPassword = () => {
@@ -14,6 +15,7 @@ const TextField = ({ label, type, name, value, onChange, error }) => {
       <div className="input-group has-validation">
         <input
           type={showPassword ? "text" : type}
+          autoComplete="current-password"
           id={name}
           name={name}
           value={value}
