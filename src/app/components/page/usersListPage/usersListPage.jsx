@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import _ from "lodash";
-import UserTable from "./userTable";
-import SearchStatus from "./searchStatus";
-import Pagination from "./pagination";
-import GroupList from "./groupList";
-import { paginate } from "../../utils/paginate";
-import api from "../../api";
-import SearchLine from "./searchLine";
+import UserTable from "../../ui/userTable";
+import SearchStatus from "../../ui/searchStatus";
+import Pagination from "../../common/pagination";
+import GroupList from "../../common/groupList";
+import { paginate } from "../../../../utils/paginate";
+import api from "../../../../api";
+import SearchLine from "../../common/searchLine";
 
-const UsersList = () => {
+const UsersListPage = () => {
   const [users, setUsers] = useState([]); //импортируем пустой массив, чтобы не было ошибки при рендере таблицы, пока асинхронный запрос не был обработан
   const pageSize = 4; // количество пользователей на странице
   const [sortBy, setSortBy] = useState({ iter: "name", order: "asc" }); // по умолчанию сортируем по имене в порядке возрастания
@@ -139,4 +139,4 @@ const UsersList = () => {
     </>
   );
 };
-export default UsersList;
+export default UsersListPage;
