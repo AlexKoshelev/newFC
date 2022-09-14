@@ -75,7 +75,6 @@ const LoginForm = () => {
     e.preventDefault();
     const isValid = validate(); // получаем результат валидации true or false
     if (!isValid) return; // если валидация выдала ошибку, останавливаем функцию
-    console.log(data);
   };
   return (
     <>

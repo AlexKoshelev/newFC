@@ -11,6 +11,14 @@ export function validator(data, config) {
           statusValidate = data.trim() === "";
           break;
         }
+      case "isName":
+        const nameRegExp = /^[A-ЯЁ]/g;
+        statusValidate = !nameRegExp.test(data);
+        break;
+      case "isNameLength":
+        const nameLengthRegExp = /^[A-ЯЁ][а-яё]/g;
+        statusValidate = !nameLengthRegExp.test(data);
+        break;
       case "isEmail":
         const emailRegExp = /^\S+@\S+\.\S+$/g;
         statusValidate = !emailRegExp.test(data);

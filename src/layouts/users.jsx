@@ -5,6 +5,16 @@ import UsersListPage from "../app/components/page/usersListPage";
 const Users = () => {
   const params = useParams(); //получаем доступ к match.params
   const { userId } = params; //получаем id по ссылке в userTable
-  return <>{userId ? <UserPage userId={userId} /> : <UsersListPage />}</>; //если получили id, то отображаем страницу пользователя
+  const { editUser } = params;
+
+  return (
+    <>
+      {userId ? (
+        <UserPage userId={userId} pathName={editUser} />
+      ) : (
+        <UsersListPage />
+      )}
+    </>
+  ); //если получили id, то отображаем страницу пользователя
 };
 export default Users;
