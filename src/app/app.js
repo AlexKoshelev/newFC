@@ -9,7 +9,7 @@ const App = () => {
     <div>
       <NavBar />
       <Switch>
-        <Route path="/layouts/users/:userId?/:editUser?" component={Users} />
+        <Route path="/layouts/users/:userId?/:edit?" component={Users} />
         {/*Если есть id, то компонент userPage, если есть и id и editUser, то EditUser, иначе UserListPage */}
         <Route path="/layouts/login/:type?" component={Login} />
         <Route path="/" exact component={Main} />

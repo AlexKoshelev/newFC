@@ -4,7 +4,7 @@ import Qualitie from "../../ui/qualities/qualitie";
 import PropTypes from "prop-types";
 import { useHistory } from "react-router-dom";
 import { Link } from "react-router-dom";
-import EditUser from "../../ui/editUser";
+import EditUser from "../editPage/edit";
 
 const UserPage = ({ userId, pathName }) => {
   const [selectedUsers, setSelectedUsers] = useState();
@@ -20,6 +20,9 @@ const UserPage = ({ userId, pathName }) => {
       setEditedUsers(data);
     });
   }, [selectedUsers]);
+  const handleUpdate = (data) => {
+    setEditedUsers(data);
+  };
   const history = useHistory();
   const goToBack = () => {
     history.push(`/layouts/users/`);
@@ -31,8 +34,8 @@ const UserPage = ({ userId, pathName }) => {
         <h1>Loading...</h1>
       ) : (
         <>
-          {pathName === "editUser" /* проверяем правильность пути */ ? (
-            <EditUser userId={userId} user={editedUsers} />
+          {pathName === "edit" /* проверяем правильность пути */ ? (
+            <EditUser user={editedUsers} handleUpdate={handleUpdate} />
           ) : (
             <div className="mx-2">
               <h1>{editedUsers.name}</h1>
@@ -51,7 +54,7 @@ const UserPage = ({ userId, pathName }) => {
               >
                 Все пользователи
               </button>
-              <Link to={`${history.location.pathname}/editUser`}>
+              <Link to={`${history.location.pathname}/edit`}>
                 <button className="btn btn-danger">Изменить данные</button>
               </Link>
             </div>
