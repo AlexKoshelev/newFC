@@ -8,70 +8,91 @@ import RadioField from "../../common/form/radioField";
 import MultiSelectField from "../../common/form/multiSelectField";
 import PropTypes from "prop-types";
 import { useParams } from "react-router-dom";
-const EditUser = ({ user }) => {
-  const params = useParams(); //получаем доступ к match.params
-  const { userId } = params;
-
-  const [qualities, setQualities] = useState([]);
-  const [professions, setProfessions] = useState({});
-  const [editedUsers, setEditedUsers] = useState();
-  console.log(user.profession.name);
-  console.log(user?.profession.name);
-  console.log(editedUsers?.profession.name);
+const EditUser = () => {
+  const { userId } = useParams(); //получаем доступ к match.params
+  const [isLoading, setIsLoading] = useState(false);
+  const history = useHistory();
 
   const [data, setData] = useState({
-    name: editedUsers?.name || user.name,
-    email: editedUsers?.email || user.email,
-    profession: "editedUsers?.profession.name || user.profession.name",
-    sex: editedUsers?.sex || user.sex,
+    name: "",
+    email: "",
+    profession: "",
+    sex: "male",
     qualities: [],
-    stayOn: false,
-  }); //отслеживаем начальное состояние элементов формы
-  useEffect(() => {
-    api.users.update(userId, data).then((data) => {
-      setEditedUsers(data);
-    });
-  }, [data]);
-
-  useEffect(() => {
-    //useEffect вызывается каждый раз, когда монтируем что-то в DOM. Можем один раз при монтировании компонента, или каждый раз при изменении компонента, или можем его вызывать, когда изменяется какое либо состояние
-    api.professions.fetchAll().then((data) => {
-      setProfessions(data);
-    });
-    api.qualities.fetchAll().then((data) => {
-      setQualities(data);
-    });
-  }, []);
+  });
+  const [qualities, setQualities] = useState([]);
+  const [professions, setProfessions] = useState([]);
   const [errors, setErrors] = useState({});
-  const handleChange = (target) => {
-    console.log(target);
-    console.log(target.name);
-    console.log(target.value);
 
-    // получаем предыдущее состояние через callback и возвращаем объект с предыдущим состоянием и изменением выбранного элемента формы
-
-    setData((prevState) => ({
-      ...prevState,
-      [target.name]: target.value,
-    }));
-  };
   const getProfessionById = (id) => {
-    for (const prof in professions) {
-      const profData = professions[prof];
-      if (profData._id === id) return profData;
+    for (const prof of professions) {
+      if (prof.value === id) {
+        return { _id: prof.value, name: prof.label };
+      }
     }
   };
+
   const getQualities = (elements) => {
-    const qualitiessaArray = [];
-    for (const element of elements) {
-      for (const qualy in qualities) {
-        if (element.value === qualities[qualy]._id) {
-          qualitiessaArray.push(qualities[qualy]);
+    const qualitiesArray = [];
+    for (const elem of elements) {
+      for (const quality in qualities) {
+        if (elem.value === qualities[quality].value) {
+          qualitiesArray.push({
+            _id: qualities[quality].value,
+            name: qualities[quality].label,
+            color: qualities[quality].color,
+          });
         }
       }
     }
-    return qualitiessaArray;
+    return qualitiesArray;
   };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const isValid = validate();
+    if (!isValid) return;
+    const { profession, qualities } = data;
+    console.log(profession);
+    api.users
+      .update(userId, {
+        ...data,
+        profession: getProfessionById(profession),
+        qualities: getQualities(qualities),
+      })
+      .then((data) => history.push(`/users/${data._id}`));
+  };
+  const transformData = (data) => {
+    return data.map((qual) => ({ label: qual.name, value: qual._id }));
+  };
+  useEffect(() => {
+    setIsLoading(true);
+    api.users.getById(userId).then(({ profession, qualities, ...data }) =>
+      setData((prevState) => ({
+        ...prevState,
+        ...data,
+        qualities: transformData(qualities),
+        profession: profession._id,
+      }))
+    );
+    api.professions.fetchAll().then((data) => {
+      const professionsList = Object.keys(data).map((professionName) => ({
+        label: data[professionName].name,
+        value: data[professionName]._id,
+      }));
+      setProfessions(professionsList);
+    });
+    api.qualities.fetchAll().then((data) => {
+      const qualitiesList = Object.keys(data).map((optionName) => ({
+        value: data[optionName]._id,
+        label: data[optionName].name,
+        color: data[optionName].color,
+      }));
+      setQualities(qualitiesList);
+    });
+  }, []);
+  useEffect(() => {
+    if (data._id) setIsLoading(false);
+  }, [data]);
   const validatorConfig = {
     // конфигурация валидатора
     name: {
@@ -100,49 +121,26 @@ const EditUser = ({ user }) => {
     },
   };
   useEffect(() => {
-    //если состоянии формы изменяется, вызываем метод validate
     validate();
   }, [data]);
+  const handleChange = (target) => {
+    setData((prevState) => ({
+      ...prevState,
+      [target.name]: target.value,
+    }));
+  };
   const validate = () => {
     const errors = validator(data, validatorConfig);
     setErrors(errors);
-    return Object.keys(errors).length === 0; //возвращаем результат валидации
+    return Object.keys(errors).length === 0;
   };
+  const isValid = Object.keys(errors).length === 0;
 
-  const isValid = Object.keys(errors).length === 0; // true, если ошибок нет, используем для активации кнопки
-  const history = useHistory();
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const isValid = validate(); // получаем результат валидации true or false
-    if (!isValid) return; // если валидация выдала ошибку, останавливаем функцию
-    const { profession, qualities } = data;
-    api.users
-      .update(userId, {
-        ...data,
-        profession: getProfessionById(profession),
-        qualities: getQualities(qualities),
-      })
-      .then((data) => {
-        editedUsers(data);
-      });
-  };
-  const goToBack = () => {
-    history.push(`/layouts/users/${userId}`);
-  };
-  /*  const handleSubmit = (e) => {
-    e.preventDefault();
-    const isValid = validate(); // получаем результат валидации true or false
-    if (!isValid) return; // если валидация выдала ошибку, останавливаем функцию
-  };
-  const history = useHistory();
- */
   return (
     <div className="container mt-5">
       <div className="row">
         <div className="col-md-6 offset-md-3 shadow p-4">
-          {editedUsers === undefined ? (
-            <h1>Loading...</h1>
-          ) : (
+          {!isLoading && Object.keys(professions).length > 0 ? (
             <form onSubmit={handleSubmit}>
               <TextField
                 label={"Имя"}
@@ -159,11 +157,11 @@ const EditUser = ({ user }) => {
                 error={errors.email}
               />
               <SelectField
-                label={"Выберите профессию"}
-                name={"profession"}
+                label="Выберите профессию"
+                name="profession"
                 value={data.profession}
                 onChange={handleChange}
-                defaultOption={"Choose..."}
+                defaultOption="Choose..."
                 options={professions}
                 error={errors.profession}
               />
@@ -188,14 +186,13 @@ const EditUser = ({ user }) => {
               <button
                 type="submit"
                 disabled={!isValid}
-                onClick={() => {
-                  goToBack(`/layouts/users/${userId}`);
-                }}
                 className="btn btn-primary w-100 mx-auto"
               >
-                Обновить данные
+                Обновить
               </button>
             </form>
+          ) : (
+            <h1>Loading...</h1>
           )}
         </div>
       </div>

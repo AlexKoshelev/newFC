@@ -14,15 +14,6 @@ const UserPage = ({ userId, pathName }) => {
     });
   }, [userId]); //получаем объект с данными по выбранному пользователю
 
-  const [editedUsers, setEditedUsers] = useState(selectedUsers);
-  useEffect(() => {
-    api.users.update(userId, selectedUsers).then((data) => {
-      setEditedUsers(data);
-    });
-  }, [selectedUsers]);
-  const handleUpdate = (data) => {
-    setEditedUsers(data);
-  };
   const history = useHistory();
   const goToBack = () => {
     history.push(`/layouts/users/`);
@@ -35,16 +26,16 @@ const UserPage = ({ userId, pathName }) => {
       ) : (
         <>
           {pathName === "edit" /* проверяем правильность пути */ ? (
-            <EditUser user={editedUsers} handleUpdate={handleUpdate} />
+            <EditUser />
           ) : (
             <div className="mx-2">
-              <h1>{editedUsers.name}</h1>
-              <h2>{`Профессия: ${editedUsers.profession.name}`}</h2>
+              <h1>{selectedUsers.name}</h1>
+              <h2>{`Профессия: ${selectedUsers.profession.name}`}</h2>
               <div>
-                <Qualitie qualities={editedUsers.qualities} />
+                <Qualitie qualities={selectedUsers.qualities} />
               </div>
-              <div>{`CompletedMeetings: ${editedUsers.completedMeetings}`}</div>
-              <h2>{`Rate: ${editedUsers.rate}`}</h2>
+              <div>{`CompletedMeetings: ${selectedUsers.completedMeetings}`}</div>
+              <h2>{`Rate: ${selectedUsers.rate}`}</h2>
 
               <button
                 className="btn btn-primary me-2"
