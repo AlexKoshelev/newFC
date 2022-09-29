@@ -59,7 +59,7 @@ const EditUser = () => {
         profession: getProfessionById(profession),
         qualities: getQualities(qualities),
       })
-      .then((data) => history.push(`/users/${data._id}`));
+      .then(() => history.push(`/layouts/users/${userId}`));
   };
   const transformData = (data) => {
     return data.map((qual) => ({ label: qual.name, value: qual._id }));
@@ -76,6 +76,7 @@ const EditUser = () => {
     );
     api.professions.fetchAll().then((data) => {
       const professionsList = Object.keys(data).map((professionName) => ({
+        name: data[professionName].name,
         label: data[professionName].name,
         value: data[professionName]._id,
       }));
@@ -140,7 +141,9 @@ const EditUser = () => {
     <div className="container mt-5">
       <div className="row">
         <div className="col-md-6 offset-md-3 shadow p-4">
-          {!isLoading && Object.keys(professions).length > 0 ? (
+          {!isLoading &&
+          Object.keys(professions).length &&
+          Object.keys(qualities).length > 0 ? (
             <form onSubmit={handleSubmit}>
               <TextField
                 label={"Имя"}

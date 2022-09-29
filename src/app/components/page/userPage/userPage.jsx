@@ -8,6 +8,7 @@ import EditUser from "../editPage/edit";
 
 const UserPage = ({ userId, pathName }) => {
   const [selectedUsers, setSelectedUsers] = useState();
+
   useEffect(() => {
     api.users.getById(userId).then((data) => {
       setSelectedUsers(data);
