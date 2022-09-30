@@ -2,20 +2,21 @@ import React, { useEffect, useState } from "react";
 import api from "../../../../api";
 import Qualitie from "../../ui/qualities/qualitie";
 import PropTypes from "prop-types";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import EditUser from "../editPage/edit";
 
 const UserPage = ({ userId, pathName }) => {
   const [selectedUsers, setSelectedUsers] = useState();
+  const history = useHistory();
+  const path = useLocation().pathname;
 
   useEffect(() => {
     api.users.getById(userId).then((data) => {
       setSelectedUsers(data);
     });
-  }, [userId]); //получаем объект с данными по выбранному пользователю
+  }, [userId, path]); //получаем объект с данными по выбранному пользователю
 
-  const history = useHistory();
   const goToBack = () => {
     history.push(`/layouts/users/`);
   };
