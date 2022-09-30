@@ -137,13 +137,21 @@ const EditUser = () => {
   };
   const isValid = Object.keys(errors).length === 0;
 
-  return (
-    <div className="container mt-5">
-      <div className="row">
-        <div className="col-md-6 offset-md-3 shadow p-4">
-          {!isLoading &&
-          Object.keys(professions).length &&
-          Object.keys(qualities).length > 0 ? (
+  return !isLoading &&
+    Object.keys(professions).length &&
+    Object.keys(qualities).length > 0 ? (
+    <>
+      <div className="container mt-5">
+        <div className="row">
+          <div className="col-md-4 mb-3">
+            <button
+              className="btn btn-primary offset-md-4 "
+              onClick={() => history.goBack()}
+            >
+              <i className="bi bi-caret-left"></i>Назад
+            </button>
+          </div>
+          <div className="col-md-6 offset-md-3 shadow p-4">
             <form onSubmit={handleSubmit}>
               <TextField
                 label={"Имя"}
@@ -194,9 +202,15 @@ const EditUser = () => {
                 Обновить
               </button>
             </form>
-          ) : (
-            <h1>Loading...</h1>
-          )}
+          </div>
+        </div>
+      </div>
+    </>
+  ) : (
+    <div className="container mt-5">
+      <div className="row">
+        <div className="col-md-6 offset-md-3 shadow p-4">
+          <h1>Loading...</h1>
         </div>
       </div>
     </div>
