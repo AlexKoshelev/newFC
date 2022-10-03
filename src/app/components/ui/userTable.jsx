@@ -1,9 +1,10 @@
 import React from "react";
 import PropTypes from "prop-types";
 import Bookmark from "../common/bookmark";
-import Qualitie from "./qualities/qualitie";
+import QualitiesList from "./qualities/qualitieList";
 import Table from "../common/table";
 import { Link } from "react-router-dom";
+import Profession from "./profession";
 const UserTable = ({ users, onDelete, onBookmark, selectedSort, onSort }) => {
   const columns = {
     name: {
@@ -15,9 +16,12 @@ const UserTable = ({ users, onDelete, onBookmark, selectedSort, onSort }) => {
     },
     qualities: {
       name: "Качества",
-      component: (user) => <Qualitie qualities={user.qualities} />,
+      component: (user) => <QualitiesList qualities={user.qualities} />,
     },
-    profession: { iter: "profession.name", name: "Профессия" },
+    profession: {
+      name: "Профессия",
+      component: (user) => <Profession id={user.profession} />,
+    },
     completedMeetings: { iter: "completedMeetings", name: "Встретился, раз" },
     rate: { iter: "rate", name: "Оценка" },
     bookmark: {
