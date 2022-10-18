@@ -3,7 +3,6 @@ import LoginForm from "../app/components/ui/loginForm";
 import RegisterForm from "../app/components/ui/registerForm";
 import { useParams } from "react-router-dom";
 
-
 const Login = () => {
   const { type } = useParams();
   const [formType, setFormType] = useState(

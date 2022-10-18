@@ -2,10 +2,15 @@ import React, { useEffect, useState } from "react";
 import TextField from "../common/form/textField";
 import CheckBoxField from "../common/form/checkBoxField";
 import { validator } from "../../../utils/validator";
+import { useAuth } from "../../hooks/useAuth";
+import { useHistory } from "react-router-dom";
 /* import * as yup from "yup"; */
 const LoginForm = () => {
   const [data, setData] = useState({ email: "", password: "", stayOn: false }); //отслеживаем начальное состояние элементов формы
   const [errors, setErrors] = useState({});
+  const [errorLog, setErrorLog] = useState(null);
+  const { logIn } = useAuth;
+  const history = useHistory();
   const handleChange = (target) => {
     // получаем предыдущее состояние через callback и возвращаем объект с предыдущим состоянием и изменением выбранного элемента формы
 
@@ -13,6 +18,7 @@ const LoginForm = () => {
       ...prevState,
       [target.name]: target.value,
     }));
+    setErrorLog(null);
   };
   /*   const validateScheme = yup.object().shape({
     password: yup
@@ -71,10 +77,16 @@ const LoginForm = () => {
   };
 
   const isValid = Object.keys(errors).length === 0; // true, если ошибок нет, используем для активации кнопки
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const isValid = validate(); // получаем результат валидации true or false
     if (!isValid) return; // если валидация выдала ошибку, останавливаем функцию
+    try {
+      await logIn(data);
+      history.push("/");
+    } catch (error) {
+      setErrorLog(error.message);
+    }
   };
   return (
     <>

@@ -9,20 +9,15 @@ import api from "../../../../api";
 import SearchLine from "../../common/searchLine";
 import { useUser } from "../../../hooks/useUsers";
 const UsersListPage = () => {
+  const { users } = useUser();
   const pageSize = 4; // количество пользователей на странице
   const [sortBy, setSortBy] = useState({ iter: "name", order: "asc" }); // по умолчанию сортируем по имене в порядке возрастания
   const [currentPage, setCurrentPage] = useState(1); // по умолчанию всегда выбираем первую страницу
   const [professions, setProfessions] = useState();
   const [selectedProf, setSelectedProf] = useState();
   const [searchUsers, setSearchUsers] = useState("");
-  const { users } = useUser();
-  console.log(users);
 
   useEffect(() => {
-    //useEffect вызывается каждый раз, когда монтируем что-то в DOM. Можем один раз при монтировании компонента, или каждый раз при изменении компонента, или можем его вызывать, когда изменяется какое либо состояние
-    /*     api.users.fetchAll().then((data) => {
-      setUsers(data);
-    }); */
     api.professions.fetchAll().then((data) => {
       setProfessions(data);
     });

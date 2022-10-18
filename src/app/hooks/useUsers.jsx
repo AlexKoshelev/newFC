@@ -2,7 +2,6 @@ import React, { useEffect, useState, useContext } from "react";
 import PropTypes from "prop-types";
 import { toast } from "react-toastify";
 import userService from "../services/user.services";
-
 const UserContext = React.createContext();
 
 export const useUser = () => {

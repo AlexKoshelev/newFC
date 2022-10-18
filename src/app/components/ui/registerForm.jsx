@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from "react";
 import TextField from "../common/form/textField";
 import { validator } from "../../../utils/validator";
-import api from "../../../api";
 import SelectField from "../common/form/selectField";
 import RadioField from "../common/form/radioField";
 import MultiSelectField from "../common/form/multiSelectField";
 import CheckBoxField from "../common/form/checkBoxField";
+import { useQualities } from "../../hooks/useQuality";
+import { useProfession } from "../../hooks/useProfession";
+import { useAuth } from "../../hooks/useAuth";
+import { useHistory } from "react-router-dom";
+
 const RegisterForm = () => {
+  const history = useHistory();
   const [data, setData] = useState({
     email: "",
     password: "",
@@ -16,17 +21,17 @@ const RegisterForm = () => {
     licence: false,
   }); //отслеживаем начальное состояние элементов формы
   const [errors, setErrors] = useState({});
-  const [qualities, setQualities] = useState();
-  const [professions, setProfessions] = useState();
-  useEffect(() => {
-    //useEffect вызывается каждый раз, когда монтируем что-то в DOM. Можем один раз при монтировании компонента, или каждый раз при изменении компонента, или можем его вызывать, когда изменяется какое либо состояние
-    api.professions.fetchAll().then((data) => {
-      setProfessions(data);
-    });
-    api.qualities.fetchAll().then((data) => {
-      setQualities(data);
-    });
-  }, []);
+  const { qualities } = useQualities();
+  const qualitiesList = qualities.map((qualityName) => ({
+    label: qualityName.name,
+    value: qualityName._id,
+  }));
+  const { professions } = useProfession();
+  const professionList = professions.map((profName) => ({
+    label: profName.name,
+    value: profName._id,
+  }));
+  const { signUp } = useAuth();
   const handleChange = (target) => {
     // получаем предыдущее состояние через callback и возвращаем объект с предыдущим состоянием и изменением выбранного элемента формы
 
@@ -83,11 +88,25 @@ const RegisterForm = () => {
     validate();
   }, [data]);
   const isValid = Object.keys(errors).length === 0; // true, если ошибок нет, используем для активации кнопки
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const isValid = validate(); // получаем результат валидации true or false
     if (!isValid) return; // если валидация выдала ошибку, останавливаем функцию
+    const newData = {
+      ...data,
+      qualities: data.qualities.map((q) => q.value),
+    };
+
+    try {
+      await signUp(newData);
+      history.push("./");
+    } catch (error) {
+      setErrors(error);
+
+      console.log(error);
+    }
   };
+
   return (
     <>
       <form onSubmit={handleSubmit}>
@@ -112,7 +131,7 @@ const RegisterForm = () => {
           value={data.profession}
           onChange={handleChange}
           defaultOption={"Choose..."}
-          options={professions}
+          options={professionList}
           error={errors.profession}
         />
         <RadioField
@@ -127,7 +146,7 @@ const RegisterForm = () => {
           label={"Выберите ваш пол"}
         />
         <MultiSelectField
-          options={qualities}
+          options={qualitiesList}
           defaultValue={data.qualities}
           onChange={handleChange}
           name={"qualities"}
